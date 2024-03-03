@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{E6C5B20A-D76E-4922-B6B3-B2F3A6530B57}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="FirstTask\TaskWithPolygon.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SecondTask\TaskWithBelongingToAFigure.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="TaskWithPolygon">
+        <MSBuild Projects="FirstTask\TaskWithPolygon.dproj"/>
+    </Target>
+    <Target Name="TaskWithPolygon:Clean">
+        <MSBuild Projects="FirstTask\TaskWithPolygon.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TaskWithPolygon:Make">
+        <MSBuild Projects="FirstTask\TaskWithPolygon.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="TaskWithBelongingToAFigure">
+        <MSBuild Projects="SecondTask\TaskWithBelongingToAFigure.dproj"/>
+    </Target>
+    <Target Name="TaskWithBelongingToAFigure:Clean">
+        <MSBuild Projects="SecondTask\TaskWithBelongingToAFigure.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TaskWithBelongingToAFigure:Make">
+        <MSBuild Projects="SecondTask\TaskWithBelongingToAFigure.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
