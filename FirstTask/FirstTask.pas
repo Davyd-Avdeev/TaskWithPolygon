@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Types;
 
 type
   TForm1 = class(TForm)
@@ -14,6 +14,8 @@ type
     procedure DrawRectanglesFromArray();
     procedure CheckingCursorInRgn(point: TPoint);
     procedure CreateRegion();
+    procedure CheckRegion(mousePoint: TPoint);
+    function IsMouseInPoly(x,y: integer; myP: array of TPointF): boolean;
   private
     { Private declarations }
   public
@@ -26,6 +28,8 @@ var
   countOfArray: Integer;
   isRgnCreated: Boolean;
   rgn: HRGN;
+  arrayOfPointsF: array of TPointF;
+
 
 implementation
 
@@ -63,8 +67,9 @@ begin
     end
     else
     begin
-    DrawRectanglesFromArray();
+    //DrawRectanglesFromArray();
     CreateRegion();
+    //CheckRegion(mousePosition);
     end;
   end;
 end;
@@ -102,6 +107,42 @@ procedure TForm1.CreateRegion();
 begin
   rgn := CreatePolygonRgn(pointsArray[0], Length(pointsArray), WINDING);
   isRgnCreated := True;
+  //Canvas.Polyline(pointsArray);
+  Canvas.Polygon(pointsArray);
 end;
+
+procedure TForm1.CheckRegion(mousePoint: TPoint);
+var
+  i,j,maxX,maxY: Integer;
+  minMaxPointX, minMaxPointY: TPoint;
+begin
+  for i := 0 to maxX do
+  begin
+    for j := 0 to maxY do
+    begin
+
+    end;
+  end;
+  //if(Canvas.Pixels[mousePoint.X,mousePoint.Y] = clRed) then
+  //ShowMessage('Yes');
+end;
+
+function TForm1.IsMouseInPoly(x,y: integer; myP: array of TPointF): boolean; //x и y - это координаты мыши
+  var                                                                        //myP - массив с вершинами полигона
+    i,j,npol: integer;
+    inPoly: boolean;
+  begin
+    npol:=length(myP)-1;
+    j:=npol;
+    inPoly:=false;
+    for i:=0 to npol do
+    begin
+      if ((((myP[i].y<=y) and (y<myP[j].y)) or ((myP[j].y<=y) and (y<myP[i].y))) and
+         (x>(myP[j].x-myP[i].x)*(y-myP[i].y) / (myP[j].y-myP[i].y)+myP[i].x))
+           then inPoly:=not inPoly;
+      j:=i;
+    end;
+    result:=inPoly;
+  end;
 
 end.

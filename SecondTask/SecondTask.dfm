@@ -12,17 +12,20 @@ object Form2: TForm2
   Font.Style = []
   TextHeight = 15
   object lblResult: TLabel
-    Left = 371
-    Top = 120
-    Width = 129
-    Height = 21
-    Caption = #1042#1074#1077#1076#1080#1090#1077' '#1079#1085#1072#1095#1077#1085#1080#1103
+    Left = 344
+    Top = 128
+    Width = 185
+    Height = 29
+    Alignment = taCenter
+    AutoSize = False
+    Caption = 'Input values'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -16
+    Font.Height = -20
     Font.Name = 'Segoe UI'
     Font.Style = []
     ParentFont = False
+    Layout = tlCenter
   end
   object Label1: TLabel
     Left = 400

@@ -42,10 +42,8 @@ type
 
 var
   Form2: TForm2;
-  isRgnCreated: Boolean;
-  countArray: Integer;
   pointsFArray: array of TPointF;
-  pointF: TPointF;
+  countArray: Integer;
 
 implementation
 
@@ -64,21 +62,20 @@ begin
   point.Y := StrToFloat(editPointY.Text);
   if CheckForConvexityPolygon() then
     if InsideConvexPolygon(point) then
-      ShowMessage('True convex')
+      lblResult.Caption := 'Point in polygon'
     else
-      ShowMessage('False convex')
+      lblResult.Caption := 'Point outside polygon'
   else
     if InsideNonConvexPolygon(point) then
-      ShowMessage('True non-convex')
+      lblResult.Caption := 'Point in polygon'
     else
-      ShowMessage('False non-convex')  
+      lblResult.Caption := 'Point outside polygon';
 end;
 
 procedure TForm2.btnPresetConvexClick(Sender: TObject);
 begin
   lbxCoordinates.Clear();
-  countArray := 5;
-  SetLength(pointsFArray, countArray);
+  SetLength(pointsFArray, 5);
   pointsFArray[0] := Point(-2,-3);
   pointsFArray[1] := Point(2,-3);
   pointsFArray[2] := Point(4,0);
@@ -95,8 +92,7 @@ end;
 procedure TForm2.btnPresetNonConvexClick(Sender: TObject);
 begin
   lbxCoordinates.Clear();
-  countArray := 6;
-  SetLength(pointsFArray, countArray);
+  SetLength(pointsFArray, 5);
   pointsFArray[0] := Point(-3,-3);
   pointsFArray[1] := Point(2,-3);
   pointsFArray[2] := Point(3,0);
@@ -118,12 +114,12 @@ var
   text: String;
 begin
   text := 'X' + IntToStr(countArray) + ': ' + editVertexX.Text + ', Y' + IntToStr(countArray) + ': ' + editVertexY.Text;
-  countArray:=countArray+1;
   point.X := StrToFloat(editVertexX.Text);
   point.Y := StrToFloat(editVertexY.Text);
   SetLength(pointsFArray, countArray);
-  pointsFArray[countArray-1].X := point.X;
-  pointsFArray[countArray-1].Y := point.Y;
+  pointsFArray[countArray].X := point.X;
+  pointsFArray[countArray].Y := point.Y;
+  countArray:=countArray+1;
   editVertexX.Text := '';
   editVertexY.Text := '';
 
@@ -131,12 +127,12 @@ begin
 end;
 
 function TForm2.CheckAreaTriangle(a,b,p: TPointF): Real;
-  var
-    S: Real;
-  begin
-    S:= ((a.X-p.X)*(b.Y-p.Y)-(a.Y-p.Y)*(b.X-p.X)) / 2;
-    Exit(S);
-  end;
+var
+  S: Real;
+begin
+  S:= ((a.X-p.X)*(b.Y-p.Y)-(a.Y-p.Y)*(b.X-p.X)) / 2;
+  Exit(S);
+end;
 
 function TForm2.AreaConvexPolygon(): Real;
 var
@@ -161,10 +157,10 @@ begin
   sumArea:= 0;
   for i := 0 to Length(pointsFArray)-1 do
   begin
-  if (i = Length(pointsFArray)-1) then
-    sumArea := sumArea + abs(CheckAreaTriangle(pointsFArray[i],pointsFArray[0], p))
+    if (i = Length(pointsFArray)-1) then
+      sumArea := sumArea + abs(CheckAreaTriangle(pointsFArray[i],pointsFArray[0], p))
     else
-    sumArea := sumArea + abs(CheckAreaTriangle(pointsFArray[i],pointsFArray[i+1], p));
+      sumArea := sumArea + abs(CheckAreaTriangle(pointsFArray[i],pointsFArray[i+1], p));
   end;
 
   if(FloatToStr(sumArea) = FloatToStr(polygonArea)) then
@@ -179,8 +175,8 @@ var
 begin
   count:= 0;
   
-  for I := 0 to Length(pointsFArray)-2 do
-  begin    
+  for i := 0 to Length(pointsFArray)-2 do
+  begin
     if (CheckOnEdge(pointsFArray[i],pointsFArray[i+1],p)) then
       Exit(True);
     if (pointsFArray[i].Y = pointsFArray[i+1].Y) then Continue;
@@ -269,11 +265,11 @@ begin
   arr[Length(arr)-2] := LeftTurn(pointsFArray[Length(arr)-2], pointsFArray[Length(arr)-1], pointsFArray[0]);
   arr[Length(arr)-1] := LeftTurn(pointsFArray[Length(arr)-1], pointsFArray[0], pointsFArray[1]);
 
-  for I := 0 to Length(arr)-2 do
+  for i := 0 to Length(arr)-2 do
   begin    
     if (arr[i] = arr[i+1]) then
     else 
-    begin    
+    begin
       Exit(False);
     end;
   end; 
