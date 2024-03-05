@@ -123,8 +123,6 @@ begin
 
     end;
   end;
-  //if(Canvas.Pixels[mousePoint.X,mousePoint.Y] = clRed) then
-  //ShowMessage('Yes');
 end;
 
 function TForm1.IsMouseInPoly(x,y: integer; myP: array of TPointF): boolean; //x и y - это координаты мыши

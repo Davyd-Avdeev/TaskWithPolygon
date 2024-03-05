@@ -9,6 +9,9 @@
         <Projects Include="SecondTask\TaskWithBelongingToAFigure.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="ThirdTask\TaskWithPolygonRotation.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="TaskWithBelongingToAFigure:Make">
         <MSBuild Projects="SecondTask\TaskWithBelongingToAFigure.dproj" Targets="Make"/>
     </Target>
+    <Target Name="TaskWithPolygonRotation">
+        <MSBuild Projects="ThirdTask\TaskWithPolygonRotation.dproj"/>
+    </Target>
+    <Target Name="TaskWithPolygonRotation:Clean">
+        <MSBuild Projects="ThirdTask\TaskWithPolygonRotation.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TaskWithPolygonRotation:Make">
+        <MSBuild Projects="ThirdTask\TaskWithPolygonRotation.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure"/>
+        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure;TaskWithPolygonRotation"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean"/>
+        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean;TaskWithPolygonRotation:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make"/>
+        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make;TaskWithPolygonRotation:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
