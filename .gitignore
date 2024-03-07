@@ -1,1 +1,6 @@
 *.local
+*.dcu
+*.res
+*.identcache
+__history/
+Debug/
