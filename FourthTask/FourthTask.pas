@@ -7,53 +7,26 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
 
 type
-  {TNode = record
-    p: ^TPoint;
-  end;
   TTriangle = record
-    Nodes: array[0..2] of ^TNode;
+    Nodes: array[0..2] of Tpoint;
   end;
   TEdge = record
-    Nodes: array[0..1] of ^TNode;
-    Triangles: array[0..1] of ^TTriangle;
-  end;
-  TStruct = record
-    Triangle: ^TTriangle;
-    Triangles: array[0..2] of ^TTriangle;
-  end;}
-  TNode = record
-    X: Integer;
-    Y: Integer;
-  end;
-  TEdge = record
-    Nodes: array [0..1] of TNode;
-  end;
-  TTriangle = record
-    Center: TPoint;
-    Nodes: array [0..2] of TPoint; //TNode
-    //Edges: array [0..2] of TEdge;
-  end;
-  TStructDate = record
-
-
+    Nodes: array[0..1] of TPoint;
+    Triangles: array[0..1] of TTriangle;
   end;
 
   TForm4 = class(TForm)
     Button1: TButton;
-    procedure FormMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure CreateRegion();
-    procedure CreateRegion2(arrP: array of TPoint);
     procedure FormPaint(Sender: TObject);
-    procedure HalfTriangulition();
     procedure SortArray();
     procedure Button1Click(Sender: TObject);
     procedure CreateOuterShell();
-    procedure TwoHalfTriangulation();
+    procedure Triangulition();
 
-    function InsideConvexPolygon(p: TPointF; triangle: TTriangle): Boolean;
+    function IsInsideTriangle(p: TPointF; triangle: TTriangle): Boolean;
     function CheckAreaTriangle(a,b,p: TPointF): Real;
-    function CheckOnEdge(a, b, p: TPointF): Boolean;
+    function IsOnEdge(a, b, p: TPointF): Boolean;
     function LeftTurn(a,b,p: TPointF): Boolean;
     procedure FormCreate(Sender: TObject);
   private
@@ -66,7 +39,8 @@ var
   Form4: TForm4;
   pointsArray, shellPoints, pointsOutside: array of TPoint;
   TrianglesArray: array of TTriangle;
-  countOfArray: Integer;
+  EdgesArray: array of TEdge;
+  countOfArray, cpIndex: Integer;
   cc:Tpoint;
   isRgnCreated: Boolean;
 
@@ -85,34 +59,6 @@ begin
     x:= (Width - button1.Width) - 80;
    button1.Top := y;
    button1.Left:= x;
-end;
-
-procedure TForm4.FormMouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-var
-  mousePoint: TPoint;
-  i: Integer;
-begin
-  mousePoint.X:=X;
-  mousePoint.Y:=Y;
-  if (isRgnCreated = false) then
-  begin
-    if Button=mbLeft then
-    begin
-      Canvas.Pen.Color:=clred;
-      Canvas.Brush.color:=clRed;
-      Canvas.Ellipse(mousePoint.X-2,mousePoint.Y-2,mousePoint.X+2,mousePoint.Y+2);
-      countOfArray:=countOfArray+1;
-      SetLength(pointsArray,countOfArray);
-      pointsArray[countOfArray-1].X:= mousePoint.X;
-      pointsArray[countOfArray-1].Y:= mousePoint.Y;
-    end
-    else
-    begin
-      CreateRegion();
-      isRgnCreated := True;
-    end;
-  end
 end;
 
 function TForm4.LeftTurn(a,b,p: TPointF): Boolean;
@@ -151,6 +97,8 @@ begin
   Canvas.FillRect(ClientRect);
   PatBlt(Canvas.Handle, 0, 0, ClientWidth, ClientHeight, WHITENESS);
 
+
+
   for I := 0 to Length(TrianglesArray)-1 do
   begin
     for j := 0 to 1 do
@@ -162,69 +110,41 @@ begin
     Canvas.LineTo(TrianglesArray[i].Nodes[0].X,TrianglesArray[i].Nodes[0].Y);
     //ShowMessage('');
   end;
-
-  Canvas.Brush.Color := clRed;
+  //ShowMessage('');
+  {Canvas.Brush.Color := clRed;
   for I := 0 to Length(PointsArray)-1 do
-    Canvas.Ellipse(PointsArray[i].X -4, PointsArray[i].Y-4, PointsArray[i].X+4, PointsArray[i].Y+4);
+    Canvas.Ellipse(PointsArray[i].X -4, PointsArray[i].Y-4, PointsArray[i].X+4, PointsArray[i].Y+4);}
 
+    {Canvas.Pen.Color := clRed;
+    Canvas.MoveTo(EdgesArray[8].Triangles[0].Nodes[0].X,EdgesArray[8].Triangles[0].Nodes[0].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[0].Nodes[1].X,EdgesArray[8].Triangles[0].Nodes[1].Y);
+    Canvas.MoveTo(EdgesArray[8].Triangles[0].Nodes[1].X,EdgesArray[8].Triangles[0].Nodes[1].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[0].Nodes[2].X,EdgesArray[8].Triangles[0].Nodes[2].Y);
+    Canvas.MoveTo(EdgesArray[8].Triangles[0].Nodes[2].X,EdgesArray[8].Triangles[0].Nodes[2].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[0].Nodes[0].X,EdgesArray[8].Triangles[0].Nodes[0].Y);
 
+    Canvas.MoveTo(EdgesArray[8].Triangles[1].Nodes[0].X,EdgesArray[8].Triangles[1].Nodes[0].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[1].Nodes[1].X,EdgesArray[8].Triangles[1].Nodes[1].Y);
+    Canvas.MoveTo(EdgesArray[8].Triangles[1].Nodes[1].X,EdgesArray[8].Triangles[1].Nodes[1].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[1].Nodes[2].X,EdgesArray[8].Triangles[1].Nodes[2].Y);
+    Canvas.MoveTo(EdgesArray[8].Triangles[1].Nodes[2].X,EdgesArray[8].Triangles[1].Nodes[2].Y);
+    Canvas.LineTo(EdgesArray[8].Triangles[1].Nodes[0].X,EdgesArray[8].Triangles[1].Nodes[0].Y);
+
+    Canvas.Pen.Color := clYellow;
+    Canvas.Brush.Color := clYellow;
+    Canvas.Ellipse(EdgesArray[8].Triangles[1].Nodes[1].X -4,
+    EdgesArray[8].Triangles[1].Nodes[1].Y-4, EdgesArray[8].Triangles[1].Nodes[1].X+4,
+    EdgesArray[8].Triangles[1].Nodes[1].Y+4);    }
 end;
 
-procedure TForm4.CreateRegion2(arrP: array of TPoint);
+procedure TForm4.Triangulition();
 var
-  I,x1,y1: Integer;
-  x,y: Real;
-  teamArr: array of TPoint;
-begin
-  Canvas.Brush.Color := clRed;
-  Canvas.FillRect(ClientRect);
-  PatBlt(Canvas.Handle, 0, 0, ClientWidth, ClientHeight, WHITENESS);
-  SetLength(teamArr,3);
-
-  x:= 0;
-  y:= 0;
-  for I := 0 to Length(arrP)-1 do
-  begin
-    x:= x + arrP[i].X;
-    y:= y + arrP[i].Y;
-  end;
-
-  x1:= Round(x/Length(arrP));
-  y1:= Round(y/Length(arrP));
-
-  for i := 0 to Length(arrP)-2 do
-  begin
-    Canvas.MoveTo(arrP[i].X,arrP[i].Y);
-    Canvas.LineTo(arrP[i+1].X,arrP[i+1].Y);
-    Canvas.MoveTo(arrP[i].X,arrP[i].Y);
-    Canvas.LineTo(cc.X,cc.Y);
-  end;
-  Canvas.MoveTo(arrP[Length(arrP)-1].X,arrP[Length(arrP)-1].Y);
-  Canvas.LineTo(arrP[0].X,arrP[0].Y);
-  for I := 0 to Length(PointsArray)-1 do
-    Canvas.Ellipse(PointsArray[i].X -4, PointsArray[i].Y-4, PointsArray[i].X+4, PointsArray[i].Y+4);
-
-  Canvas.Brush.Color := clYellow;
-  //Canvas.Ellipse(cc.X -4, cc.Y-4, cc.X+4, cc.Y+4);
-  //Canvas.MoveTo(arrP[Length(arrP)-1].X,arrP[Length(arrP)-1].Y);
-  //Canvas.LineTo(cc.X,cc.X);
-
-end;
-
-procedure TForm4.HalfTriangulition();
-var
-  i,j,k,m, sign:Integer;
+  i, j, k, m, sign, pointIndex:Integer;
   isPointFind, test: Boolean;
-  centerPoint: TPoint;
+  edge: TEdge;
   triangle: TTriangle;
 begin
-
-  for I := 0 to 2 do
-  begin
-    triangle.Nodes[i] := Point(0,0);
-    triangle.Center := Point(0,0);
-  end;
-
+ //
   sign := 1;
   isPointFind := False;
   k:= (Length(pointsArray)-1) div 2;
@@ -243,27 +163,50 @@ begin
     end;
     if (test) then
     begin
-      centerPoint:= pointsArray[k + m];
+      pointIndex := k + m;
       break;
     end;
   end;
-  cc:= centerPoint;
+  cpIndex:= pointIndex; //Нашли центральную точку
 
-  for i := 0 to Length(shellPoints)-2 do
+  SetLength(TrianglesArray, 1);
+  TrianglesArray[0].Nodes[0] := shellPoints[0];
+  TrianglesArray[0].Nodes[1] := shellPoints[1];
+  TrianglesArray[0].Nodes[2] := pointsArray[cpIndex];
+
+  SetLength(EdgesArray, 1);
+  EdgesArray[0].Nodes[0] := shellPoints[1];
+  EdgesArray[0].Nodes[1] := pointsArray[cpIndex];
+  EdgesArray[0].Triangles[0] := TrianglesArray[0];
+
+  for I := 1 to Length(shellPoints)-2 do
   begin
-    triangle.Nodes[0] := shellPoints[i];
-    triangle.Nodes[1] := shellPoints[i+1];
-    triangle.Nodes[2] := cc; //Change
     SetLength(TrianglesArray, Length(TrianglesArray)+1);
-    TrianglesArray[Length(TrianglesArray)-1] := triangle;
+    TrianglesArray[i].Nodes[0] := shellPoints[i];
+    TrianglesArray[i].Nodes[1] := shellPoints[i+1];
+    TrianglesArray[i].Nodes[2] := pointsArray[cpIndex];
+    SetLength(EdgesArray, Length(EdgesArray)+1);
+    EdgesArray[i-1].Triangles[0] := TrianglesArray[i];
+
+    EdgesArray[Length(EdgesArray)-1].Nodes[0] := shellPoints[i+1];
+    EdgesArray[Length(EdgesArray)-1].Nodes[1] := pointsArray[cpIndex];
+    EdgesArray[Length(EdgesArray)-1].Triangles[0] := TrianglesArray[i];
   end;
 
-  triangle.Nodes[0] := shellPoints[Length(shellPoints)-1];
-  triangle.Nodes[1] := shellPoints[0];
-  triangle.Nodes[2] := cc; //Change
   SetLength(TrianglesArray, Length(TrianglesArray)+1);
-  TrianglesArray[Length(TrianglesArray)-1] := triangle;
-  test:= True;
+  TrianglesArray[Length(TrianglesArray)-1].Nodes[0] := shellPoints[Length(shellPoints)-1];
+  TrianglesArray[Length(TrianglesArray)-1].Nodes[1] := shellPoints[0];
+  TrianglesArray[Length(TrianglesArray)-1].Nodes[2] := pointsArray[cpIndex];
+
+  EdgesArray[Length(EdgesArray)-1].Triangles[1] := TrianglesArray[Length(TrianglesArray)-1];
+
+  SetLength(EdgesArray, Length(EdgesArray)+1);
+  EdgesArray[Length(EdgesArray)-1].Nodes[0] := shellPoints[0];
+  EdgesArray[Length(EdgesArray)-1].Nodes[1] := pointsArray[cpIndex];
+  EdgesArray[Length(EdgesArray)-1].Triangles[0] := TrianglesArray[Length(TrianglesArray)-1];
+  EdgesArray[Length(EdgesArray)-1].Triangles[1] := TrianglesArray[0];
+
+  //Находим все точки не попавшие в 'триангуляцию' и добавляем в массив
   for I := 0 to Length(pointsArray)-1 do
   begin
     test:=true;
@@ -280,27 +223,18 @@ begin
       SetLength(pointsOutside, Length(pointsOutside)+1);
       pointsOutside[Length(pointsOutside)-1]:= pointsArray[i];
     end;
-    //pointsOutside
-  end;
 
-  //ShowMessage('');
-  TwoHalfTriangulation();
-end;
+  end; //Закончили
 
-procedure TForm4.TwoHalfTriangulation();
-var
-  i,j,k: Integer;
-  triangle: TTriangle;
-begin
   for i := 0 to Length(pointsOutside)-1 do
   begin
     for j := 0 to Length(TrianglesArray)-1 do
     begin
-      if(InsideConvexPolygon(pointsOutside[i], TrianglesArray[j]))then
+      if(IsInsideTriangle(pointsOutside[i], TrianglesArray[j]))then
       begin
-        if((CheckOnEdge(TrianglesArray[j].Nodes[0],TrianglesArray[j].Nodes[1],TrianglesArray[j].Nodes[2]))
-          And (CheckOnEdge(TrianglesArray[j].Nodes[1],TrianglesArray[j].Nodes[2],TrianglesArray[j].Nodes[0]))
-          And (CheckOnEdge(TrianglesArray[j].Nodes[2],TrianglesArray[j].Nodes[0],TrianglesArray[j].Nodes[1])))then
+        if((IsOnEdge(TrianglesArray[j].Nodes[0],TrianglesArray[j].Nodes[1],TrianglesArray[j].Nodes[2]))
+          And (IsOnEdge(TrianglesArray[j].Nodes[1],TrianglesArray[j].Nodes[2],TrianglesArray[j].Nodes[0]))
+          And (IsOnEdge(TrianglesArray[j].Nodes[2],TrianglesArray[j].Nodes[0],TrianglesArray[j].Nodes[1])))then
         begin
           SetLength(TrianglesArray, Length(TrianglesArray)+1);
           triangle.Nodes[0]:= TrianglesArray[j].Nodes[0];
@@ -333,8 +267,25 @@ begin
     end;
   end;
 
-  //ShowMessage('');
   CreateRegion();
+end;
+
+procedure SortAngles();
+var
+  i: Integer;
+  sA,sB : real;
+begin
+  for I := 0 to Length(EdgesArray)-1 do
+  begin
+
+  end;
+end;
+
+procedure CheckForComplianceWithDelone();
+var
+  i: Integer;
+begin
+  //
 end;
 
 procedure TForm4.SortArray();
@@ -404,11 +355,10 @@ begin
     pointOnHull := endpoint;
   until endpoint = pointsArray[0];
 
-  HalfTriangulition();
-  //CreateRegion2(shellPoints);
+  Triangulition();
 end;
 
-function TForm4.InsideConvexPolygon(p: TPointF; triangle: TTriangle): Boolean;
+function TForm4.IsInsideTriangle(p: TPointF; triangle: TTriangle): Boolean;
 var
   i: Integer;
   sumArea, polygonArea: Real;
@@ -437,7 +387,7 @@ begin
   Exit(S);
 end;
 
-function TForm4.CheckOnEdge(a, b, p: TPointF): Boolean;
+function TForm4.IsOnEdge(a, b, p: TPointF): Boolean;
 var
   ABLength, APLength, BPLength: Real;
   isOnLine:Boolean;

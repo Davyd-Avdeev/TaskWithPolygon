@@ -11,7 +11,6 @@ object Form4: TForm4
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
-  OnMouseDown = FormMouseDown
   OnPaint = FormPaint
   TextHeight = 15
   object Button1: TButton

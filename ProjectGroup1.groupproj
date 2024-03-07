@@ -12,6 +12,9 @@
         <Projects Include="ThirdTask\TaskWithPolygonRotation.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="FourthTask\TaskWithDelaunaysTriangulation.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -47,14 +50,23 @@
     <Target Name="TaskWithPolygonRotation:Make">
         <MSBuild Projects="ThirdTask\TaskWithPolygonRotation.dproj" Targets="Make"/>
     </Target>
+    <Target Name="TaskWithDelaunaysTriangulation">
+        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj"/>
+    </Target>
+    <Target Name="TaskWithDelaunaysTriangulation:Clean">
+        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="TaskWithDelaunaysTriangulation:Make">
+        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure;TaskWithPolygonRotation"/>
+        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure;TaskWithPolygonRotation;TaskWithDelaunaysTriangulation"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean;TaskWithPolygonRotation:Clean"/>
+        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean;TaskWithPolygonRotation:Clean;TaskWithDelaunaysTriangulation:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make;TaskWithPolygonRotation:Make"/>
+        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make;TaskWithPolygonRotation:Make;TaskWithDelaunaysTriangulation:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
