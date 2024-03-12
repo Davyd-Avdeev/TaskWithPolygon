@@ -75,13 +75,6 @@ procedure TForm6.FormCreate(Sender: TObject);
 var
   x,y: Integer;
 begin
-  form6.height:= 1000;
-  form6.Width:= 1200;
-  Form6.Position:=poScreenCenter;
-    y:= (Height - button1.Height) - 80;
-    x:= (Width - button1.Width) - 60;
-   button1.Top := y;
-   button1.Left:= x;
 end;
 
 procedure TForm6.Button1Click(Sender: TObject);
