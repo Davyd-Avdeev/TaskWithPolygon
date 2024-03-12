@@ -26,7 +26,7 @@ object Form6: TForm6
     Left = 504
     Top = 328
     Width = 105
-    Height = 31
+    Height = 23
     TabOrder = 1
     Text = #1050#1086#1083'-'#1074#1086' '#1090#1086#1095#1077#1082
     OnClick = editNumberPointsClick

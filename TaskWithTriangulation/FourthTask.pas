@@ -79,7 +79,7 @@ var
 begin
   form6.height:= 1000;
   form6.Width:= 1200;
-  Form6.Position:=poScreenCenter;
+  Form6.Position:= poScreenCenter;
     y:= (Height - btnTriangulation.Height) - 100;
     x:= (Width - btnTriangulation.Width) - 80;
   btnTriangulation.Top := y;
@@ -129,7 +129,9 @@ begin
   LocalitationOutsidePoints();
   LocalitationPoints();
   Rebuilding();
+  isFinish:= True;
   DrawTriangulation();
+  btnTriangulation.Enabled:= False;
 end;
 
 procedure TForm6.DrawTriangulation();
