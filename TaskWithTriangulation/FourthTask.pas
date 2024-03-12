@@ -89,7 +89,7 @@ var
   i: Integer;
   p: TPoint;
 begin
-  SetLength(allPointsArray,20);
+  SetLength(allPointsArray,50);
   for i := 0 to Length(allPointsArray)-1 do
   begin
     p:= Point(Random(1100),Random(900));
@@ -560,6 +560,7 @@ var
 begin
   isFinish:=False;
   count:=0;
+  //Проверяются все ребра, пока не будет найдено не одно неправильное
   while isFinish = False do
   begin
     for i := 0 to Length(RibsArray)-1 do
