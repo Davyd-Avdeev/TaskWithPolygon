@@ -1,14 +1,14 @@
-program TaskWithDelaunaysTriangulation;
+program TaskWithTriangulation;
 
 uses
   Vcl.Forms,
-  FourthTask in 'FourthTask.pas' {Form4};
+  FourthTask in 'FourthTask.pas' {Form6};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm4, Form4);
+  Application.CreateForm(TForm6, Form6);
   Application.Run;
 end.

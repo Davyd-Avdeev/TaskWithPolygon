@@ -113,13 +113,13 @@ var
   point: TPointF;
   text: String;
 begin
+  countArray:=countArray+1;
   text := 'X' + IntToStr(countArray) + ': ' + editVertexX.Text + ', Y' + IntToStr(countArray) + ': ' + editVertexY.Text;
   point.X := StrToFloat(editVertexX.Text);
   point.Y := StrToFloat(editVertexY.Text);
   SetLength(pointsFArray, countArray);
-  pointsFArray[countArray].X := point.X;
-  pointsFArray[countArray].Y := point.Y;
-  countArray:=countArray+1;
+  pointsFArray[countArray-1].X := point.X;
+  pointsFArray[countArray-1].Y := point.Y;
   editVertexX.Text := '';
   editVertexY.Text := '';
 
@@ -255,20 +255,21 @@ end;
 function TForm2.CheckForConvexityPolygon(): Boolean;
 var
   i: Integer;
-  arr: array of Integer;
+  tempArr: array of Integer;
 begin
-  SetLength(arr,Length(pointsFArray));
+  SetLength(tempArr,Length(pointsFArray));
   for i := 0 to Length(pointsFArray)-3 do
   begin
-    arr[i] := LeftTurn(pointsFArray[i], pointsFArray[i+1], pointsFArray[i+2]);
+    tempArr[i] := LeftTurn(pointsFArray[i], pointsFArray[i+1], pointsFArray[i+2]);
   end;
-  arr[Length(arr)-2] := LeftTurn(pointsFArray[Length(arr)-2], pointsFArray[Length(arr)-1], pointsFArray[0]);
-  arr[Length(arr)-1] := LeftTurn(pointsFArray[Length(arr)-1], pointsFArray[0], pointsFArray[1]);
 
-  for i := 0 to Length(arr)-2 do
+  tempArr[Length(tempArr)-2] := LeftTurn(pointsFArray[Length(tempArr)-2], pointsFArray[Length(tempArr)-1], pointsFArray[0]);
+  tempArr[Length(tempArr)-1] := LeftTurn(pointsFArray[Length(tempArr)-1], pointsFArray[0], pointsFArray[1]);
+
+  for i := 0 to Length(tempArr)-2 do
   begin    
-    if (arr[i] = arr[i+1]) then
-    else 
+    if (tempArr[i] = tempArr[i+1]) then
+    else
     begin
       Exit(False);
     end;

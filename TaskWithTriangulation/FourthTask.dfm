@@ -1,7 +1,7 @@
-object Form4: TForm4
+object Form6: TForm6
   Left = 0
   Top = 0
-  Caption = #39
+  Caption = 'Form6'
   ClientHeight = 442
   ClientWidth = 628
   Color = clBtnFace
@@ -11,14 +11,13 @@ object Form4: TForm4
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
-  OnPaint = FormPaint
   TextHeight = 15
   object Button1: TButton
-    Left = 496
-    Top = 384
+    Left = 504
+    Top = 376
     Width = 105
     Height = 41
-    Caption = 'Button1'
+    Caption = #1058#1088#1080#1072#1085#1075#1091#1083#1103#1094#1080#1103
     TabOrder = 0
     OnClick = Button1Click
   end

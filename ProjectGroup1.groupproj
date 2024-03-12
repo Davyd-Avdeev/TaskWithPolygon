@@ -12,7 +12,7 @@
         <Projects Include="ThirdTask\TaskWithPolygonRotation.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="FourthTask\TaskWithDelaunaysTriangulation.dproj">
+        <Projects Include="TaskWithTriangulation\TaskWithTriangulation.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -50,23 +50,23 @@
     <Target Name="TaskWithPolygonRotation:Make">
         <MSBuild Projects="ThirdTask\TaskWithPolygonRotation.dproj" Targets="Make"/>
     </Target>
-    <Target Name="TaskWithDelaunaysTriangulation">
-        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj"/>
+    <Target Name="TaskWithTriangulation">
+        <MSBuild Projects="TaskWithTriangulation\TaskWithTriangulation.dproj"/>
     </Target>
-    <Target Name="TaskWithDelaunaysTriangulation:Clean">
-        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj" Targets="Clean"/>
+    <Target Name="TaskWithTriangulation:Clean">
+        <MSBuild Projects="TaskWithTriangulation\TaskWithTriangulation.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="TaskWithDelaunaysTriangulation:Make">
-        <MSBuild Projects="FourthTask\TaskWithDelaunaysTriangulation.dproj" Targets="Make"/>
+    <Target Name="TaskWithTriangulation:Make">
+        <MSBuild Projects="TaskWithTriangulation\TaskWithTriangulation.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure;TaskWithPolygonRotation;TaskWithDelaunaysTriangulation"/>
+        <CallTarget Targets="TaskWithPolygon;TaskWithBelongingToAFigure;TaskWithPolygonRotation;TaskWithTriangulation"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean;TaskWithPolygonRotation:Clean;TaskWithDelaunaysTriangulation:Clean"/>
+        <CallTarget Targets="TaskWithPolygon:Clean;TaskWithBelongingToAFigure:Clean;TaskWithPolygonRotation:Clean;TaskWithTriangulation:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make;TaskWithPolygonRotation:Make;TaskWithDelaunaysTriangulation:Make"/>
+        <CallTarget Targets="TaskWithPolygon:Make;TaskWithBelongingToAFigure:Make;TaskWithPolygonRotation:Make;TaskWithTriangulation:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
