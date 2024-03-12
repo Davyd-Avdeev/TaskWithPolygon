@@ -89,7 +89,7 @@ var
   i: Integer;
   p: TPoint;
 begin
-  SetLength(allPointsArray,50);
+  SetLength(allPointsArray,15);
   for i := 0 to Length(allPointsArray)-1 do
   begin
     p:= Point(Random(1100),Random(900));
@@ -591,9 +591,13 @@ begin
         rib1:= TRib.Create(p1,p0,nil,nil);
         ribIndex1:= FindRib(rib1);
         for j := 0 to 1 do
+        begin
+          if (ribIndex1 < 0) or (ribIndex1 > High(RibsArray))  then
+            ribIndex1:=0;
           if (RibsArray[ribIndex1].Triangles[j] <> nil) then
             if (RibsArray[ribIndex1].Triangles[j] = RibsArray[i].Triangles[0]) then
               TIndex1:= j;
+        end;
 
         rib1:= TRib.Create(p3,p0,nil,nil);
         ribIndex2:= FindRib(rib1);
