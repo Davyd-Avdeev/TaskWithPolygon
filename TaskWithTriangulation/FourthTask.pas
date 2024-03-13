@@ -26,13 +26,12 @@ type
     procedure DrawTriangulation();
     procedure SortArray();
     procedure CreateOuterShell();
-    procedure CreateCenterPoint();
     procedure LocalitationOutsidePoints();
     procedure CreateInitialTriangles();
     procedure LocalitationPoints();
     procedure Rebuilding();
     procedure RebuildRib(i,p0,p1,p2,p3: Integer);
-    procedure testse();
+    procedure CreateTriangleWithoutCenter();
 
     function LeftTurn(a,b,p: TPointF): Real;
     function CheckAreaTriangle(a,b,p: TPointF): Real;
@@ -47,7 +46,6 @@ type
     { Private declarations }
   public
     { Public declarations }
-
   end;
 
 var
@@ -90,6 +88,7 @@ begin
   editNumberPoints.Top := y;
   editNumberPoints.Left := x;
   isFinish:= False;
+
   Canvas.Brush.Color := clRed;
   Canvas.FillRect(ClientRect);
   PatBlt(Canvas.Handle, 0, 0, ClientWidth, ClientHeight, WHITENESS);
@@ -114,6 +113,11 @@ begin
     ShowMessage('Неверный ввод числа точек');
     Exit();
   end;
+  if(count < 3) then
+  begin
+    ShowMessage('Минимум точек 3');
+    Exit();
+  end;
 
   SetLength(allPointsArray, count);
   for i := 0 to Length(allPointsArray)-1 do
@@ -124,17 +128,18 @@ begin
 
   SortArray();
   CreateOuterShell();
+
   if(FindCentralPoint() = false)then
   begin
-    testse();
+    CreateTriangleWithoutCenter();
     Rebuilding();
     isFinish:= True;
     DrawTriangulation();
     btnTriangulation.Enabled:= False;
     Exit();
   end;
-  CreateInitialTriangles();
 
+  CreateInitialTriangles();
   LocalitationOutsidePoints();
   LocalitationPoints();
   Rebuilding();
@@ -163,8 +168,6 @@ begin
   for i := 0 to Length(AllPointsArray)-1 do
     if(AllPointsArray[i].X <> -1)then
       Canvas.Ellipse(AllPointsArray[i].X-2, AllPointsArray[i].Y-2, AllPointsArray[i].X+2, AllPointsArray[i].Y+2);
-  Canvas.Pen.Color:= clBlack;
-  Canvas.Brush.Color:= clBlack;
 end;
 
 procedure TForm6.editNumberPointsClick(Sender: TObject);
@@ -303,19 +306,6 @@ begin
   Exit(True);
 end;
 
-procedure TForm6.CreateCenterPoint();
-var
-  x, y: Integer;
-  p: TPoint;
-begin  
-  x:= Round((AllPointsArray[0].X + AllPointsArray[Length(shellPointsArray)-1].X)/2);
-  y:= Round((AllPointsArray[0].Y + AllPointsArray[Length(shellPointsArray)-1].Y)/2);
-  p:= Point(x,y);
-  SetLength(AllPointsArray,Length(AllPointsArray)+1);
-  AllPointsArray[Length(AllPointsArray)-1]:= p;
-  cpIndex:= Length(AllPointsArray)-1;
-end;
-
 //Создание начальных треугольников и рёбер
 procedure TForm6.CreateInitialTriangles();
 var
@@ -359,14 +349,23 @@ begin
       RibsArray[j].Triangles[0]:= i;
       j:= j+2;
     end;
-
-    //ShowMessage('');
 end;
 
-procedure TForm6.testse();
+procedure TForm6.CreateTriangleWithoutCenter();
 var
   i,j,lastIndex, tempIndex: Integer;
 begin
+  if(Length(AllPointsArray) = 3)then
+  begin
+    SetLength(RibsArray, 3);
+    SetLength(TrianglesArray, 1);
+    TrianglesArray[0]:= TTriangle.Create(0,1,2);
+    RibsArray[0]:= TRib.Create(0,1,0,-1);
+    RibsArray[1]:= TRib.Create(1,2,0,-1);
+    RibsArray[2]:= TRib.Create(2,0,0,-1);
+    Exit();
+  end;
+
   for i := 0 to Length(shellPointsArray)-2 do
   begin
     SetLength(RibsArray, Length(RibsArray)+1);
@@ -375,7 +374,7 @@ begin
   SetLength(RibsArray, Length(RibsArray)+1);
   RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[Length(shellPointsArray)-1], shellPointsArray[0], -1,-1);
   tempIndex:= Length(RibsArray);
-
+  lastIndex:= 0;
   for i := 1 to Length(shellPointsArray)-3 do
   begin
     if(LeftTurn(AllPointsArray[shellPointsArray[i]], AllPointsArray[shellPointsArray[i+1]], AllPointsArray[shellPointsArray[Length(shellPointsArray)-1]]) <> 0) then
@@ -386,7 +385,6 @@ begin
       SetLength(TrianglesArray, Length(TrianglesArray)+1);
       TrianglesArray[Length(TrianglesArray)-1]:= TTriangle.Create(shellPointsArray[i-1], shellPointsArray[i], shellPointsArray[Length(shellPointsArray)-1]);
       lastIndex:= i;
-      //
     end
     else
     begin
@@ -394,7 +392,6 @@ begin
       RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[i+1], shellPointsArray[lastIndex], -1,-1);
       SetLength(TrianglesArray, Length(TrianglesArray)+1);
       TrianglesArray[Length(TrianglesArray)-1]:= TTriangle.Create(shellPointsArray[i], shellPointsArray[i+1], shellPointsArray[lastIndex]);
-
     end;
   end;
 
@@ -413,10 +410,11 @@ begin
   j:= 0;
   for i := 0 to tempIndex-1 do
   begin
-    if(i = lastIndex + 2) then
+    if((i = lastIndex + 2) And (lastIndex <>0)) then
     j:= j - 1
     else
     RibsArray[i].Triangles[0]:= j;
+    if(j <> Length(TrianglesArray)-1)then
     j:= j + 1;
   end;
 end;
@@ -654,7 +652,7 @@ begin
 
           break;
         end;
-      end;            
+      end;
     end;
   end;
 end;
@@ -667,6 +665,8 @@ var
   isFinish:Boolean;
   angle1,angle2: Real;
 begin
+  if(Length(AllPointsArray) = 3)then
+    Exit();
   isFinish:=False;
   count:=0;
   //Проверяются все ребра, пока не будет найдено не одно неправильное
