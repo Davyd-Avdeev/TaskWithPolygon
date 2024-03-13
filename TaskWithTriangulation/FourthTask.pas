@@ -32,6 +32,7 @@ type
     procedure LocalitationPoints();
     procedure Rebuilding();
     procedure RebuildRib(i,p0,p1,p2,p3: Integer);
+    procedure testse();
 
     function LeftTurn(a,b,p: TPointF): Real;
     function CheckAreaTriangle(a,b,p: TPointF): Real;
@@ -124,8 +125,16 @@ begin
   SortArray();
   CreateOuterShell();
   if(FindCentralPoint() = false)then
-    CreateCenterPoint();
+  begin
+    testse();
+    Rebuilding();
+    isFinish:= True;
+    DrawTriangulation();
+    btnTriangulation.Enabled:= False;
+    Exit();
+  end;
   CreateInitialTriangles();
+
   LocalitationOutsidePoints();
   LocalitationPoints();
   Rebuilding();
@@ -146,7 +155,7 @@ begin
   for I := 0 to Length(RibsArray)-1 do
   begin
     Canvas.MoveTo(AllPointsArray[RibsArray[i].Nodes[0]].X, AllPointsArray[RibsArray[i].Nodes[0]].Y);
-    Canvas.LineTo(AllPointsArray[RibsArray[i].Nodes[1]].X, AllPointsArray[RibsArray[i].Nodes[1]].Y);;
+    Canvas.LineTo(AllPointsArray[RibsArray[i].Nodes[1]].X, AllPointsArray[RibsArray[i].Nodes[1]].Y);
   end;
 
   Canvas.Pen.Color:= clRed;
@@ -352,6 +361,64 @@ begin
     end;
 
     //ShowMessage('');
+end;
+
+procedure TForm6.testse();
+var
+  i,j,lastIndex, tempIndex: Integer;
+begin
+  for i := 0 to Length(shellPointsArray)-2 do
+  begin
+    SetLength(RibsArray, Length(RibsArray)+1);
+    RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[i], shellPointsArray[i+1], -1,-1);
+  end;
+  SetLength(RibsArray, Length(RibsArray)+1);
+  RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[Length(shellPointsArray)-1], shellPointsArray[0], -1,-1);
+  tempIndex:= Length(RibsArray);
+
+  for i := 1 to Length(shellPointsArray)-3 do
+  begin
+    if(LeftTurn(AllPointsArray[shellPointsArray[i]], AllPointsArray[shellPointsArray[i+1]], AllPointsArray[shellPointsArray[Length(shellPointsArray)-1]]) <> 0) then
+    begin
+      SetLength(RibsArray, Length(RibsArray)+1);
+      RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[i], shellPointsArray[Length(shellPointsArray)-1], -1,-1);;
+
+      SetLength(TrianglesArray, Length(TrianglesArray)+1);
+      TrianglesArray[Length(TrianglesArray)-1]:= TTriangle.Create(shellPointsArray[i-1], shellPointsArray[i], shellPointsArray[Length(shellPointsArray)-1]);
+      lastIndex:= i;
+      //
+    end
+    else
+    begin
+      SetLength(RibsArray, Length(RibsArray)+1);
+      RibsArray[Length(RibsArray)-1]:= TRib.Create(shellPointsArray[i+1], shellPointsArray[lastIndex], -1,-1);
+      SetLength(TrianglesArray, Length(TrianglesArray)+1);
+      TrianglesArray[Length(TrianglesArray)-1]:= TTriangle.Create(shellPointsArray[i], shellPointsArray[i+1], shellPointsArray[lastIndex]);
+
+    end;
+  end;
+
+  SetLength(TrianglesArray, Length(TrianglesArray)+1);
+  TrianglesArray[Length(TrianglesArray)-1]:= TTriangle.Create(shellPointsArray[Length(shellPointsArray)-2], shellPointsArray[Length(shellPointsArray)-1], shellPointsArray[lastIndex]);
+  j:=0;
+  for i := tempIndex to Length(RibsArray)-1 do
+  begin
+    RibsArray[i].Triangles[0]:= j;
+    if(j = lastIndex - 1) then
+      RibsArray[i].Triangles[1]:= Length(TrianglesArray)-1
+    else
+      RibsArray[i].Triangles[1]:= j+1;
+    j:=j+1;
+  end;
+  j:= 0;
+  for i := 0 to tempIndex-1 do
+  begin
+    if(i = lastIndex + 2) then
+    j:= j - 1
+    else
+    RibsArray[i].Triangles[0]:= j;
+    j:= j + 1;
+  end;
 end;
 
 //Поиск всех точек вне оболочки
